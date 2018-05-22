@@ -653,14 +653,16 @@ void Foam::fv::actuatorLineElement::calculateForce
     // Find local flow velocity by interpolating to element location
     calculateInflowVelocity(Uin);
 
-    // Subtract spanwise component of inflow velocity
-    vector spanwiseVelocity = spanDirection_
-                            * (inflowVelocity_ & spanDirection_)
-                            / magSqr(spanDirection_);
-    inflowVelocity_ -= spanwiseVelocity;
-
-    // Calculate relative velocity and Reynolds number
+    // Calculate relative velocity
     relativeVelocity_ = inflowVelocity_ - velocity_;
+    
+    // Subtract spanwise component of relative velocity
+    vector spanwiseVelocity = spanDirection_
+                            * (relativeVelocity_ & spanDirection_)
+                            / magSqr(spanDirection_);
+    relativeVelocity_ -= spanwiseVelocity;
+    
+    // Calculate Reynolds number
     Re_ = mag(relativeVelocity_)*chordLength_/nu_;
 
     // Calculate angle of attack (radians)
